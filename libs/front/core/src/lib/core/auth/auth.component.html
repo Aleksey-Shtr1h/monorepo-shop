@@ -1,0 +1,38 @@
+<div class="flex flex-row justify-center items-center h-dvh">
+    <p-card header="Sign In" [style]="{'bg-cyan-500': true}">
+        <form class="flex flex-col gap-y-4 mt-3">
+            <div class="">
+                <p-floatlabel variant="on">
+                    <p-iconfield>
+                        <input pInputText id="on_label" autocomplete="off" />
+                        <p-inputicon class="pi pi-user" />
+                    </p-iconfield>
+
+                    <label for="on_label">User name</label>
+                </p-floatlabel>
+
+                @if (true) {
+                    <p-message class="pl-1" severity="error" size="small" variant="simple">
+                        Username is required
+                    </p-message>
+                }
+            </div>
+
+            <div>
+                <p-floatlabel variant="on">
+                    <p-iconfield>
+                        <p-password [toggleMask]="true" [feedback]="false" autocomplete="off" />
+                    </p-iconfield>
+
+                    <label for="on_label">Password</label>
+                </p-floatlabel>
+
+                @if (true) {
+                    <p-message class="pl-1" severity="error" size="small" variant="simple">
+                        Password is required
+                    </p-message>
+                }
+            </div>
+        </form>
+    </p-card>
+</div>
