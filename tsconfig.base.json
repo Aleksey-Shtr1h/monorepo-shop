@@ -15,8 +15,7 @@
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "paths": {
-            "@monorepo-apps/core": ["libs/front/core/src/index.ts"],
-            "@kai/core": ["libs/front/core/src/index.ts"]
+            "@front-lib/core": ["libs/front/core/src/index.ts"]
         }
     },
     "exclude": ["node_modules", "tmp"]
