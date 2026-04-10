@@ -40,6 +40,15 @@ export default [
                     style: 'kebab-case',
                 },
             ],
+            '@typescript-eslint/explicit-member-accessibility': [
+                'error',
+                {
+                    accessibility: 'explicit',
+                    overrides: {
+                        constructors: 'no-public',
+                    },
+                },
+            ],
         },
     },
     {

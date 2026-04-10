@@ -1,24 +1,43 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import {InjectRepository} from "@nestjs/typeorm";
-import {Users} from "./entities/user.entity";
-import {Repository} from "typeorm";
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { RegisterBodyDto } from '../auth/dto/register-body.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(Users)
-    private _usersRepository: Repository<Users>,
-  ) {}
+    constructor(
+        @InjectRepository(UserEntity)
+        private _usersRepository: Repository<UserEntity>,
+    ) {}
 
-  public create(createUserDto: CreateUserDto): Promise<Users> {
-    const newUser = this._usersRepository.create(createUserDto);
+    public findUserAll(): Promise<UserEntity[]> {
+        return this._usersRepository.find();
+    }
 
-    return this._usersRepository.save(newUser);
-  }
+    public getUserById(id: string): Promise<UserEntity> {
+        return this._usersRepository.findOne({
+            where: {
+                id: id,
+            },
+        });
+    }
 
-  public findAll(): Promise<Users[]> {
-    return this._usersRepository.find();
-  }
+    public getUserByEmail(email: string): Promise<UserEntity> {
+        return this._usersRepository.findOne({
+            where: {
+                email: email,
+            },
+        });
+    }
+
+    public async createUser(signUpBody: RegisterBodyDto): Promise<UserEntity> {
+        const newUser = new UserEntity();
+
+        newUser.name = signUpBody.name;
+        newUser.email = signUpBody.email.trim().toLowerCase();
+        newUser.password = signUpBody.password;
+
+        return await newUser.save();
+    }
 }

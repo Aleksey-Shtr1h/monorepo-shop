@@ -1,38 +1,93 @@
 <div class="flex flex-row justify-center items-center h-dvh">
-    <p-card header="Sign In" [style]="{'bg-cyan-500': true}">
-        <form class="flex flex-col gap-y-4 mt-3">
-            <div class="">
-                <p-floatlabel variant="on">
-                    <p-iconfield>
-                        <input pInputText id="on_label" autocomplete="off" />
-                        <p-inputicon class="pi pi-user" />
-                    </p-iconfield>
+    <p-card header="Sign Up">
+        @if (!!formSignUp) {
+            <form
+                [formGroup]="formSignUp"
+                class="flex flex-col gap-y-4 mt-3"
+            >
+                <div>
+                    <p-floatlabel variant="on">
+                        <p-iconfield>
+                            <input
+                                class="w-100"
+                                pInputText
+                                id="on_label"
+                                autocomplete="off"
+                                [formControlName]="'name'"
+                            />
 
-                    <label for="on_label">User name</label>
-                </p-floatlabel>
+                            <p-inputicon class="pi pi-user"/>
+                        </p-iconfield>
 
-                @if (true) {
-                    <p-message class="pl-1" severity="error" size="small" variant="simple">
-                        Username is required
-                    </p-message>
-                }
-            </div>
+                        <label for="on_label">User name</label>
+                    </p-floatlabel>
 
-            <div>
-                <p-floatlabel variant="on">
-                    <p-iconfield>
-                        <p-password [toggleMask]="true" [feedback]="false" autocomplete="off" />
-                    </p-iconfield>
+                    @if (formSignUp.get('name')?.invalid) {
+                        <p-message
+                            class="pl-1"
+                            severity="error"
+                            size="small"
+                            variant="simple"
+                        >
+                            Username is required
+                        </p-message>
+                    }
+                </div>
 
-                    <label for="on_label">Password</label>
-                </p-floatlabel>
+                <div>
+                    <p-floatlabel variant="on">
+                        <p-iconfield>
+                            <input
+                                class="w-100"
+                                pInputText
+                                id="on_label"
+                                autocomplete="off"
+                                type="email"
+                                [formControlName]="'email'"
+                            />
 
-                @if (true) {
-                    <p-message class="pl-1" severity="error" size="small" variant="simple">
-                        Password is required
-                    </p-message>
-                }
-            </div>
-        </form>
+                            <p-inputicon class="pi pi-user"/>
+                        </p-iconfield>
+
+                        <label for="on_label">Email</label>
+                    </p-floatlabel>
+
+                    @if (formSignUp.get('email')?.invalid) {
+                        <p-message class="pl-1" severity="error" size="small" variant="simple">
+                            Email is required
+                        </p-message>
+                    }
+                </div>
+
+                <div>
+                    <p-floatlabel variant="on">
+                        <p-iconfield>
+                            <p-password
+                                autocomplete="off"
+                                inputStyleClass="w-100"
+                                [toggleMask]="true"
+                                [feedback]="false"
+                                [formControlName]="'password'"
+                            />
+                        </p-iconfield>
+
+                        <label for="on_label">Password</label>
+                    </p-floatlabel>
+
+                    @if (formSignUp.get('password')?.invalid) {
+                        <p-message class="pl-1" severity="error" size="small" variant="simple">
+                            Password is required
+                        </p-message>
+                    }
+                </div>
+
+                <p-button
+                    label="Sign Up"
+                    severity="success"
+                    [styleClass]="'w-100'"
+                    (click)="signUp()"
+                />
+            </form>
+        }
     </p-card>
 </div>

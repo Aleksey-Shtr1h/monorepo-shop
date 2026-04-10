@@ -1,26 +1,22 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class HttpService {
+    private _httpClient = inject(HttpClient);
     private _url = 'http://localhost:3000/api/';
 
-    public constructor(
-        private _http: HttpClient,
-    ) {
-    }
-
-    public get<T>(additionalUrl: string): Observable<any[]> {
+    public get<R>(additionalUrl: string): Observable<R[]> {
         const url = this.getFullUrl(additionalUrl);
 
-        return this._http.get<T[]>(url).pipe();
+        return this._httpClient.get<R[]>(url);
     }
 
-    public create<T>(body: T, additionalUrl: string): Observable<T> {
+    public post<T, R>(additionalUrl: string, body: T): Observable<R> {
         const url = this.getFullUrl(additionalUrl);
 
-        return this._http.post<T>(url, body);
+        return this._httpClient.post<R>(url, body);
     }
 
     protected getFullUrl(additionalUrl: string): string {

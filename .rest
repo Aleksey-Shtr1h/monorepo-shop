@@ -1,0 +1,31 @@
+###REGISTER
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Test",
+    "email": "2@gmail.com",
+    "password": "123456789"
+}
+
+###LOGIN
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+"email": "2@gmail.com",
+"password": "123456789"
+}
+
+###REFRESH_TOKEN
+POST http://localhost:3000/api/auth/refresh-token
+Content-Type: application/json
+
+{
+    "token": "-Vlt98ifYWbXtMwwdI0G9iONMBdwoX-ULPrT9v8QB2154OrV9eHpJMkiVl6X3lRb"
+}
+
+###GET USER PROFILE
+GET http://localhost:3000/api/users/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI1NmQyNmM0LWNhZDYtNDg0YS1hZGY5LTMwN2RhY2RjNDMyZiIsIm5hbWUiOiJUZXN0IiwiZW1haWwiOiIyQGdtYWlsLmNvbSIsImlhdCI6MTc3NTc0NDI2NSwiZXhwIjoxNzc1NzQ0ODY1fQ.wqE3ZNaOvY6O7z-5t7nexcVC3D1nd8fZRt5zlYBDEf8
+
