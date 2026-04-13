@@ -1,25 +1,25 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
-import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from '../../common/constant/jwt';
 import { UsersService } from '../users/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshTokenEntity } from './entities/refresh-token.entity';
-import { UserEntity } from '../users/entities/user.entity';
+import { UsersEntity } from '../users/entities/usersEntity';
+import { LocalStrategy } from './passport-strategy/passport-local.strategy';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from '../../common/constant/jwt';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
     imports: [
-        // UsersModule,
-        TypeOrmModule.forFeature([UserEntity, RefreshTokenEntity]),
+        TypeOrmModule.forFeature([UsersEntity, RefreshTokenEntity]),
+        PassportModule,
         JwtModule.register({
-            global: true,
-            secret: jwtConstants.secret,
-            signOptions: { expiresIn: '600s' },
+            secret: jwtConstants.access.secret,
+            signOptions: { expiresIn: '60s' },
         }),
     ],
-    providers: [AuthService, UsersService],
+    providers: [AuthService, UsersService, LocalStrategy],
     controllers: [AuthController],
     exports: [AuthService],
 })

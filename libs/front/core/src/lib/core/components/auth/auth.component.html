@@ -1,8 +1,8 @@
 <div class="flex flex-row justify-center items-center h-dvh">
     <p-card header="Sign Up">
-        @if (!!formSignUp) {
+        @if (!!formRegister) {
             <form
-                [formGroup]="formSignUp"
+                [formGroup]="formRegister"
                 class="flex flex-col gap-y-4 mt-3"
             >
                 <div>
@@ -22,7 +22,7 @@
                         <label for="on_label">User name</label>
                     </p-floatlabel>
 
-                    @if (formSignUp.get('name')?.invalid) {
+                    @if (formRegister.get('name')?.invalid) {
                         <p-message
                             class="pl-1"
                             severity="error"
@@ -52,7 +52,7 @@
                         <label for="on_label">Email</label>
                     </p-floatlabel>
 
-                    @if (formSignUp.get('email')?.invalid) {
+                    @if (formRegister.get('email')?.invalid) {
                         <p-message class="pl-1" severity="error" size="small" variant="simple">
                             Email is required
                         </p-message>
@@ -74,7 +74,7 @@
                         <label for="on_label">Password</label>
                     </p-floatlabel>
 
-                    @if (formSignUp.get('password')?.invalid) {
+                    @if (formRegister.get('password')?.invalid) {
                         <p-message class="pl-1" severity="error" size="small" variant="simple">
                             Password is required
                         </p-message>
@@ -85,7 +85,72 @@
                     label="Sign Up"
                     severity="success"
                     [styleClass]="'w-100'"
-                    (click)="signUp()"
+                    (click)="register()"
+                />
+            </form>
+        }
+    </p-card>
+</div>
+
+<div class="flex flex-row justify-center items-center h-dvh">
+    <p-card header="Sign In">
+        @if (!!formLogin) {
+            <form
+                [formGroup]="formLogin"
+                class="flex flex-col gap-y-4 mt-3"
+            >
+                <div>
+                    <p-floatlabel variant="on">
+                        <p-iconfield>
+                            <input
+                                class="w-100"
+                                pInputText
+                                id="on_label"
+                                autocomplete="off"
+                                type="email"
+                                [formControlName]="'email'"
+                            />
+
+                            <p-inputicon class="pi pi-user"/>
+                        </p-iconfield>
+
+                        <label for="on_label">Email</label>
+                    </p-floatlabel>
+
+                    @if (formLogin.get('email')?.invalid) {
+                        <p-message class="pl-1" severity="error" size="small" variant="simple">
+                            Email is required
+                        </p-message>
+                    }
+                </div>
+
+                <div>
+                    <p-floatlabel variant="on">
+                        <p-iconfield>
+                            <p-password
+                                autocomplete="off"
+                                inputStyleClass="w-100"
+                                [toggleMask]="true"
+                                [feedback]="false"
+                                [formControlName]="'password'"
+                            />
+                        </p-iconfield>
+
+                        <label for="on_label">Password</label>
+                    </p-floatlabel>
+
+                    @if (formLogin.get('password')?.invalid) {
+                        <p-message class="pl-1" severity="error" size="small" variant="simple">
+                            Password is required
+                        </p-message>
+                    }
+                </div>
+
+                <p-button
+                    label="Sign Up"
+                    severity="success"
+                    [styleClass]="'w-100'"
+                    (click)="login()"
                 />
             </form>
         }

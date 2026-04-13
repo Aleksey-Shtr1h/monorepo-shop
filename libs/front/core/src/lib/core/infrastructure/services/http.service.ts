@@ -2,6 +2,10 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface IPostOptionsForRootRestAPI {
+    withCredentials?: boolean;
+}
+
 @Injectable()
 export class HttpService {
     private _httpClient = inject(HttpClient);
@@ -13,7 +17,11 @@ export class HttpService {
         return this._httpClient.get<R[]>(url);
     }
 
-    public post<T, R>(additionalUrl: string, body: T): Observable<R> {
+    public post<T, R>(
+        additionalUrl: string,
+        body: T,
+        options?: IPostOptionsForRootRestAPI,
+    ): Observable<R> {
         const url = this.getFullUrl(additionalUrl);
 
         return this._httpClient.post<R>(url, body);
