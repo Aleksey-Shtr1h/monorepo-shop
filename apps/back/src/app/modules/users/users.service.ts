@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from './entities/user.entity';
+import { UsersEntity } from './entities/usersEntity';
 import { Repository } from 'typeorm';
 import { RegisterBodyDto } from '../auth/dto/register-body.dto';
 
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectRepository(UserEntity)
-        private _usersRepository: Repository<UserEntity>,
+        @InjectRepository(UsersEntity)
+        private _usersRepository: Repository<UsersEntity>,
     ) {}
 
-    public findUserAll(): Promise<UserEntity[]> {
-        return this._usersRepository.find();
-    }
+    // public findUserAll(): Promise<UserEntity[]> {
+    //     return this._usersRepository.find();
+    // }
 
-    public getUserById(id: string): Promise<UserEntity> {
+    public getUserById(id: string): Promise<UsersEntity> {
         return this._usersRepository.findOne({
             where: {
                 id: id,
@@ -23,7 +23,7 @@ export class UsersService {
         });
     }
 
-    public getUserByEmail(email: string): Promise<UserEntity> {
+    public getUserByEmail(email: string): Promise<UsersEntity> {
         return this._usersRepository.findOne({
             where: {
                 email: email,
@@ -31,8 +31,8 @@ export class UsersService {
         });
     }
 
-    public async createUser(signUpBody: RegisterBodyDto): Promise<UserEntity> {
-        const newUser = new UserEntity();
+    public async createUser(signUpBody: RegisterBodyDto): Promise<UsersEntity> {
+        const newUser = new UsersEntity();
 
         newUser.name = signUpBody.name;
         newUser.email = signUpBody.email.trim().toLowerCase();

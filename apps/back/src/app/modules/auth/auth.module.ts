@@ -1,25 +1,37 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
-import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from '../../common/constant/jwt';
 import { UsersService } from '../users/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RefreshTokenEntity } from './entities/refresh-token.entity';
-import { UserEntity } from '../users/entities/user.entity';
+import { UsersEntity } from '../users/entities/usersEntity';
+import { LocalStrategy } from './passport-strategy/passport-local.strategy';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from '../../common/constant/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './passport-strategy/passport-jwt.strategy';
+import {TokenCleanupService} from "./clean-refresh-token/token-cleanup.service";
 
 @Module({
     imports: [
-        // UsersModule,
-        TypeOrmModule.forFeature([UserEntity, RefreshTokenEntity]),
-        JwtModule.register({
-            global: true,
-            secret: jwtConstants.secret,
-            signOptions: { expiresIn: '600s' },
+        TypeOrmModule.forFeature([UsersEntity, RefreshTokenEntity]),
+        PassportModule,
+        JwtModule.registerAsync({
+            useFactory: () => {
+                return {
+                    secret: jwtConstants.access.secret,
+                    signOptions: { expiresIn: '15m' },
+                };
+            },
         }),
     ],
-    providers: [AuthService, UsersService],
+    providers: [
+        AuthService,
+        UsersService,
+        LocalStrategy,
+        JwtStrategy,
+        TokenCleanupService
+    ],
     controllers: [AuthController],
     exports: [AuthService],
 })

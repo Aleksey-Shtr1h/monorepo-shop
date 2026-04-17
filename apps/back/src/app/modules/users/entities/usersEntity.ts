@@ -10,7 +10,7 @@ import {
 import { RefreshTokenEntity } from '../../auth/entities/refresh-token.entity';
 
 @Entity('users')
-export class UserEntity extends BaseEntity {
+export class UsersEntity extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     public id: string;
 
@@ -29,6 +29,6 @@ export class UserEntity extends BaseEntity {
     @UpdateDateColumn()
     public updated_date: Date;
 
-    @OneToMany(() => RefreshTokenEntity, (entity) => entity.user)
-    public refreshToken: RefreshTokenEntity;
+    @OneToMany(() => RefreshTokenEntity, (refreshToken) => refreshToken.user)
+    public refreshTokens: RefreshTokenEntity[];
 }

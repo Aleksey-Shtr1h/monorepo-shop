@@ -1,4 +1,4 @@
-import { UserEntity } from '../../modules/users/entities/user.entity';
+import { UsersEntity } from '../../modules/users/entities/usersEntity';
 import { RefreshTokenEntity } from '../../modules/auth/entities/refresh-token.entity';
 
-export const entitiesForORM = [UserEntity, RefreshTokenEntity];
+export const entitiesForORM = [UsersEntity, RefreshTokenEntity];

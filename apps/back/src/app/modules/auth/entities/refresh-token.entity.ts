@@ -2,21 +2,44 @@ import {
     BaseEntity,
     Column,
     Entity,
+    Index,
     JoinColumn,
     ManyToOne,
-    PrimaryColumn,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
-import { UserEntity } from '../../users/entities/user.entity';
+import { UsersEntity } from '../../users/entities/usersEntity';
 
 @Entity('refresh_token')
 export class RefreshTokenEntity extends BaseEntity {
-    @PrimaryColumn()
-    public token: string;
+    @PrimaryGeneratedColumn('uuid')
+    public id: string;
 
     @Column()
-    public expires: Date;
+    @Index()
+    public tokenHash: string; // хэш refresh-токена для быстрого поиска
 
-    @ManyToOne(() => UserEntity, (entity) => entity.refreshToken)
-    @JoinColumn({ name: 'user_id' })
-    public user: UserEntity;
+    @Column({ nullable: true })
+    public deviceInfo: string; // User-Agent
+
+    @Column({ nullable: true })
+    public ipAddress: string; // IP при создании сессии
+
+    @Column({ type: 'timestamp' })
+    public expiresAt: Date; // срок действия токена
+
+    @Column({ default: true })
+    public isActive: boolean; // позволяет отзывать сессию
+
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    public createdAt: Date;
+
+    @ManyToOne(() => UsersEntity, (user) => user.refreshTokens, {
+        onDelete: 'CASCADE',
+    })
+    @JoinColumn({ name: 'userId' })
+    public user: UsersEntity;
+
+    @Column()
+    @Index()
+    public userId: string;
 }
