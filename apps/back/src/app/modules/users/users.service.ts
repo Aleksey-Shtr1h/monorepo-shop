@@ -14,15 +14,15 @@ export class UsersService {
     // public findUserAll(): Promise<UserEntity[]> {
     //     return this._usersRepository.find();
     // }
-    //
-    // public getUserById(id: string): Promise<UserEntity> {
-    //     return this._usersRepository.findOne({
-    //         where: {
-    //             id: id,
-    //         },
-    //     });
-    // }
-    //
+
+    public getUserById(id: string): Promise<UsersEntity> {
+        return this._usersRepository.findOne({
+            where: {
+                id: id,
+            },
+        });
+    }
+
     public getUserByEmail(email: string): Promise<UsersEntity> {
         return this._usersRepository.findOne({
             where: {

@@ -9,17 +9,29 @@ import { LocalStrategy } from './passport-strategy/passport-local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from '../../common/constant/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './passport-strategy/passport-jwt.strategy';
+import {TokenCleanupService} from "./clean-refresh-token/token-cleanup.service";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([UsersEntity, RefreshTokenEntity]),
         PassportModule,
-        JwtModule.register({
-            secret: jwtConstants.access.secret,
-            signOptions: { expiresIn: '60s' },
+        JwtModule.registerAsync({
+            useFactory: () => {
+                return {
+                    secret: jwtConstants.access.secret,
+                    signOptions: { expiresIn: '15m' },
+                };
+            },
         }),
     ],
-    providers: [AuthService, UsersService, LocalStrategy],
+    providers: [
+        AuthService,
+        UsersService,
+        LocalStrategy,
+        JwtStrategy,
+        TokenCleanupService
+    ],
     controllers: [AuthController],
     exports: [AuthService],
 })

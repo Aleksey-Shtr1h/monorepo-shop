@@ -1,10 +1,9 @@
 import {
-    BadRequestException,
     Injectable,
     UnauthorizedException,
 } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import * as bycrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { UsersEntity } from '../users/entities/usersEntity';
 import { UserDto } from '../users/dto/user.dto';
 import { Request, Response } from 'express';
@@ -17,44 +16,38 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class AuthService {
     constructor(
+        @InjectRepository(RefreshTokenEntity) private _refreshTokenRepo: Repository<RefreshTokenEntity>,
+        @InjectRepository(UsersEntity) private _usersRepo: Repository<UsersEntity>,
         private _usersService: UsersService,
         private _jwtService: JwtService,
-        @InjectRepository(RefreshTokenEntity)
-        private _refreshTokenRepo: Repository<RefreshTokenEntity>,
-        @InjectRepository(UsersEntity)
-        private _usersRepo: Repository<UsersEntity>,
     ) {}
 
     public async register(userDto: UserDto, res: Response): Promise<any> {
         const { name, email, password } = userDto;
 
-        const exists = await this._usersRepo.findOne({ where: { email } });
+        const foundUser = await this._usersRepo.findOne({ where: { email } });
 
-        if (exists) {
-            throw new UnauthorizedException('Email уже занят');
+        if (foundUser) {
+            throw new UnauthorizedException('Email is exist');
         }
+
+        const hash = await bcrypt.hash(password, 10);
 
         const newUser = this._usersRepo.create({
             name,
             email,
-            password,
+            password: hash,
         });
 
         const createdUser = await this._usersRepo.save(newUser);
 
-        // После регистрации сразу логиним (генерируем токены)
-        const tokens = await this._generateTokens(createdUser);
-
-        this._setRefreshTokenCookie(res, tokens.refreshToken);
-        this._setAccessTokenCookie(res, tokens.accessToken);
-
         return res.send({
             message: 'Registration successful',
-            user: { id: createdUser.id, email: createdUser.email },
+            user: { id: createdUser.id },
         });
     }
 
-    public async login(req: Request, res: Response) {
+    public async login(req: Request, res: Response): Promise<any> {
         const user = req.user as UsersEntity;
         const deviceInfo = req.headers['user-agent'];
         const ipAddress = req.ip;
@@ -64,33 +57,71 @@ export class AuthService {
         this._setRefreshTokenCookie(res, tokens.refreshToken);
         this._setAccessTokenCookie(res, tokens.accessToken);
 
-        return res.send({ message: 'Login successful' });
+        res.send({
+            message: 'Login successful',
+            user: { id: user.id },
+        });
     }
 
-    public async validateUser(
-        email: string,
-        password: string,
-    ): Promise<UsersEntity> {
+    public async logout(refreshToken: string, res: Response) {
+        const activatedRefreshTokens = await this._refreshTokenRepo
+            .find({
+                where: {isActive: true},
+            });
+
+        for (const activatedRefreshToken of activatedRefreshTokens) {
+            const isCompare = await bcrypt.compare(refreshToken, activatedRefreshToken.tokenHash);
+
+            if (isCompare) {
+                await this._refreshTokenRepo.update(
+                    activatedRefreshToken.id,
+                    { isActive: false }
+                );
+
+                break;
+            }
+        }
+
+        res.clearCookie('access_token', { httpOnly: true, sameSite: 'strict', path: '/' });
+        res.clearCookie('refresh_token', { httpOnly: true, sameSite: 'strict', path: '/' });
+
+        return res.send({ message: 'Logged out' });
+    }
+
+    public async refreshTokens(req: Request, res: Response): Promise<any> {
+        const oldRefreshToken = req.cookies['refresh_token'];
+
+        if (!oldRefreshToken) {
+            throw new UnauthorizedException()
+        }
+
+        const deviceInfo = req.headers['user-agent'];
+        const ipAddress = req.ip;
+        const tokens = await this._refreshTokens(oldRefreshToken, deviceInfo, ipAddress);
+
+        this._setRefreshTokenCookie(res, tokens.refreshToken);
+        this._setAccessTokenCookie(res, tokens.accessToken);
+
+        res.send({ message: 'Tokens refreshed' });
+    }
+
+    public async validateUser(email: string, password: string): Promise<UsersEntity> {
         const user = await this._usersService.getUserByEmail(email);
 
         if (!user) {
-            throw new UnauthorizedException('Неверные учетные данные');
+            throw new UnauthorizedException('Incorrect credentials');
         }
 
-        const valid = await bycrypt.compare(password, user.password);
+        const valid = await bcrypt.compare(password, user.password);
 
         if (!valid) {
-            throw new UnauthorizedException('Неверные учетные данные');
+            throw new UnauthorizedException('Incorrect credentials');
         }
 
         return user;
     }
 
-    private async _generateTokens(
-        user: UsersEntity,
-        deviceInfo?: string,
-        ipAddress?: string,
-    ) {
+    private async _generateTokens(user: UsersEntity, deviceInfo?: string, ipAddress?: string) {
         const payload = { sub: user.id, email: user.email };
 
         const accessToken = this._jwtService.sign(payload);
@@ -99,7 +130,7 @@ export class AuthService {
             expiresIn: '7d',
         });
 
-        const tokenHash = await bycrypt.hash(refreshToken, 10);
+        const tokenHash = await bcrypt.hash(refreshToken, 10);
         const expiresAt = new Date();
 
         expiresAt.setDate(expiresAt.getDate() + 7); // синхронизируем с expiresIn JWT
@@ -119,13 +150,12 @@ export class AuthService {
         return { accessToken, refreshToken };
     }
 
-    // Вспомогательные методы
     private _setAccessTokenCookie(res: Response, token: string) {
         res.cookie('access_token', token, {
             httpOnly: true,
             secure: false,
-            sameSite: 'lax',
-            maxAge: 15 * 60 * 1000, // 15 минут
+            sameSite: 'strict',
+            maxAge: 15 * 60 * 1000, // 15 минут (15 - мин, 60 - кол.сек в мин, 1000 - кол.мил.сек в сек)
             path: '/',
         });
     }
@@ -134,109 +164,57 @@ export class AuthService {
         res.cookie('refresh_token', token, {
             httpOnly: true,
             secure: false,
-            sameSite: 'lax',
+            sameSite: 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 дней
             path: '/',
         });
     }
 
-    // constructor(
-    //     @InjectRepository(RefreshTokenEntity)
-    //     private readonly _refreshTokenRepo: Repository<RefreshTokenEntity>,
-    //     private readonly _usersService: UsersService,
-    //     private readonly _jwtService: JwtService,
-    // ) {}
-    //
-    // public async signIn(signInData: LoginBodyDto): Promise<LoginResponseDto> {
-    //     const foundUser = await this._usersService.getUserByEmail(
-    //         signInData.email,
-    //     );
-    //
-    //     if (!foundUser) {
-    //         throw new UnauthorizedException('Invalid email');
-    //     }
-    //
-    //     const isPasswordValid = await bycrypt.compare(
-    //         signInData.password,
-    //         foundUser.password,
-    //     );
-    //
-    //     if (!isPasswordValid) {
-    //         throw new UnauthorizedException('Invalid password');
-    //     }
-    //
-    //     return this.getUserTokens(foundUser);
-    // }
-    //
-    // public async signUp(
-    //     signUpData: RegisterBodyDto,
-    // ): Promise<LoginResponseDto> {
-    //     const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-    //         signUpData.email,
-    //     );
-    //
-    //     if (!isEmailValid) {
-    //         throw new BadRequestException('Invalid email');
-    //     }
-    //
-    //     const foundUser = await this._usersService.getUserByEmail(
-    //         signUpData.email,
-    //     );
-    //
-    //     if (foundUser) {
-    //         throw new BadRequestException('User is exist');
-    //     }
-    //
-    //     const hashPassword = await bycrypt.hash(signUpData.password, 10);
-    //     const userCreatedParams = {
-    //         name: signUpData.name,
-    //         email: signUpData.email,
-    //         password: hashPassword,
-    //     };
-    //     const userCreated =
-    //         await this._usersService.createUser(userCreatedParams);
-    //
-    //     return this.getUserTokens(userCreated);
-    // }
-    //
-    // public async getUserTokens(user: UserEntity): Promise<LoginResponseDto> {
-    //     const payload = {
-    //         id: user.id,
-    //         name: user.name,
-    //         email: user.email,
-    //     };
-    //
-    //     const accessToken = await this._jwtService.signAsync(payload);
-    //     const newRefreshToken = new RefreshTokenEntity();
-    //     const expires = new Date();
-    //
-    //     expires.setDate(expires.getDate() + 7);
-    //     newRefreshToken.token = this._generateSecureToken();
-    //     newRefreshToken.expires = expires;
-    //     newRefreshToken.user = user;
-    //
-    //     const preparedRefreshToken = await newRefreshToken.save();
-    //
-    //     return new LoginResponseDto(accessToken, preparedRefreshToken?.token);
-    // }
-    //
-    // public async refreshToken(token: string): Promise<LoginResponseDto> {
-    //     const refreshToken = await this._refreshTokenRepo.findOne({
-    //         relations: ['user'],
-    //         where: {
-    //             token: token,
-    //             expires: MoreThan(new Date()),
-    //         },
-    //     });
-    //
-    //     if (!refreshToken) {
-    //         throw new UnauthorizedException('Refresh token not found');
-    //     }
-    //
-    //     return this.getUserTokens(refreshToken.user);
-    // }
-    //
-    // private _generateSecureToken(): string {
-    //     return randomBytes(48).toString('base64url');
-    // }
+    private async _refreshTokens(oldRefreshToken: string, deviceInfo?: string, ipAddress?: string) {
+        // 1. Верификация refresh-токена
+        let payload;
+
+        try {
+            payload = this._jwtService.verify(
+                oldRefreshToken,
+                {
+                    secret: jwtConstants.refresh.secret
+                },
+            );
+        } catch {
+            throw new UnauthorizedException('Invalid refresh token');
+        }
+
+        const user = await this._usersRepo.findOne(
+            { where: { id: payload.sub } },
+        );
+
+        if (!user) {
+            throw new UnauthorizedException()
+        }
+
+        // 2. Поиск активного refresh-токена с таким хэшем
+        const activatedRefreshTokens = await this._refreshTokenRepo.find({
+            where: { userId: user.id, isActive: true },
+        });
+
+        let existingToken: RefreshTokenEntity | null = null;
+
+        for (const activatedRefreshToken of activatedRefreshTokens) {
+            if (await bcrypt.compare(oldRefreshToken, activatedRefreshToken.tokenHash)) {
+                existingToken = activatedRefreshToken;
+                break;
+            }
+        }
+
+        if (!existingToken) {
+            throw new UnauthorizedException()
+        }
+
+        // 3. Деактивируем старый токен (токен ротация)
+        await this._refreshTokenRepo.update(existingToken.id, { isActive: false });
+
+        // 4. Создаём новую пару токенов
+        return this._generateTokens(user, deviceInfo, ipAddress);
+    }
 }

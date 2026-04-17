@@ -13,7 +13,7 @@ import {
     ReactiveFormsModule,
     Validators,
 } from '@angular/forms';
-import { HttpService } from '../../infrastructure/services';
+import { AuthService } from '../../infrastructure/services/auth.service';
 
 @Component({
     selector: 'lib-front-core-auth',
@@ -28,13 +28,13 @@ import { HttpService } from '../../infrastructure/services';
         Button,
         ReactiveFormsModule,
     ],
-    providers: [HttpService],
+    providers: [AuthService],
     templateUrl: './auth.component.html',
     styleUrl: './auth.component.css',
 })
 export class AuthCoreComponent implements OnInit {
     protected formBuilder = inject(FormBuilder);
-    protected httpService = inject(HttpService);
+    protected _authService = inject(AuthService);
     protected formRegister: FormGroup | null = null;
     protected formLogin: FormGroup | null = null;
 
@@ -62,27 +62,20 @@ export class AuthCoreComponent implements OnInit {
         const newUser = this.formRegister?.getRawValue();
 
         if (isFormValid) {
-            this.httpService
-                .post('auth/register', newUser)
-                .subscribe((user) => {
-                    console.log(user);
-                });
+            this._authService.register(newUser).subscribe((user) => {
+                console.log(user);
+            });
         }
     }
 
     public login(): void {
         const isFormValid = !!this.formLogin?.valid;
         const user = this.formLogin?.getRawValue();
-        const postOptions = {
-            withCredentials: true,
-        };
 
         if (isFormValid) {
-            this.httpService
-                .post('auth/login', user, postOptions)
-                .subscribe((user) => {
-                    console.log(user);
-                });
+            this._authService.login(user).subscribe((user) => {
+                console.log(user);
+            });
         }
     }
 }
