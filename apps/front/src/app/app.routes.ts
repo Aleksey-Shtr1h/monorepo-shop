@@ -4,7 +4,7 @@ import { AuthGuard } from '@front-lib/core';
 
 export const appRoutes: Route[] = [
     {
-        path: 'dash',
+        path: 'admin',
         component: DashComponent,
         canActivate: [AuthGuard],
     },
@@ -12,14 +12,14 @@ export const appRoutes: Route[] = [
         path: 'auth',
         children: [
             {
-                path: 'sign-in',
+                path: 'register',
                 loadComponent: () =>
-                    import('@front-lib/core').then((m) => m.AuthCoreComponent),
+                    import('./modules/auth/auth.component').then((m) => m.AuthCoreComponent),
             },
             {
-                path: 'sign-up',
+                path: 'login',
                 loadComponent: () =>
-                    import('@front-lib/core').then((m) => m.AuthCoreComponent),
+                    import('./modules/auth/auth.component').then((m) => m.AuthCoreComponent),
             },
         ],
     },

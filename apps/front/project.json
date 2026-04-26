@@ -20,7 +20,10 @@
                         "input": "apps/front/public"
                     }
                 ],
-                "styles": ["apps/front/src/styles.css"],
+                "styles": [
+                  "apps/front/src/styles.css",
+                  "node_modules/primeicons/primeicons.css"
+                ],
                 "customWebpackConfig": {
                     "path": "apps/front/webpack.config.ts"
                 }

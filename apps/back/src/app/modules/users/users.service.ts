@@ -11,9 +11,9 @@ export class UsersService {
         private _usersRepository: Repository<UsersEntity>,
     ) {}
 
-    // public findUserAll(): Promise<UserEntity[]> {
-    //     return this._usersRepository.find();
-    // }
+    public findUserAll(): Promise<UsersEntity[]> {
+        return this._usersRepository.find();
+    }
 
     public getUserById(id: string): Promise<UsersEntity> {
         return this._usersRepository.findOne({

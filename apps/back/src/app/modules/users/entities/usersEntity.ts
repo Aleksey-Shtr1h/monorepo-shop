@@ -23,6 +23,9 @@ export class UsersEntity extends BaseEntity {
     @Column()
     public password: string;
 
+    @Column({default: 'user'})
+    public role: 'admin' | 'user';
+
     @CreateDateColumn()
     public created_date: Date;
 

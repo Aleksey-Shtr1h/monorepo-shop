@@ -2,12 +2,15 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import cookieParser from 'cookie-parser';
+// import { join } from 'path';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     const globalPrefix = 'api';
     const port = 3000;
-
+    // const uploadsPath = join(process.cwd(), 'apps/back', 'uploads');
+    //
+    // app.use(uploadsPath, { prefix: '/uploads/' });
     app.use(cookieParser());
     app.setGlobalPrefix(globalPrefix);
     app.enableCors({

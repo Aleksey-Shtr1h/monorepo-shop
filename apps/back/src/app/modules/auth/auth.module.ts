@@ -30,7 +30,7 @@ import {TokenCleanupService} from "./clean-refresh-token/token-cleanup.service";
         UsersService,
         LocalStrategy,
         JwtStrategy,
-        TokenCleanupService
+        TokenCleanupService,
     ],
     controllers: [AuthController],
     exports: [AuthService],

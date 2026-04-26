@@ -1,0 +1,20 @@
+<header class="grid grid-cols-3">
+    <div class="header-right">
+        <div class="bg-orange-200">left</div>
+    </div>
+
+    <div class="header-right justify-self-center">
+        <div class="bg-orange-200">center</div>
+    </div>
+
+    <div class="header-right justify-self-end">
+        <p-menubar
+            [breakpoint]="'0px'"
+            [model]="baseUserMenuItems()"
+        />
+    </div>
+</header>
+
+<button (click)="i()" type="button">info</button>
+<button (click)="i2()" type="button">info2</button>
+

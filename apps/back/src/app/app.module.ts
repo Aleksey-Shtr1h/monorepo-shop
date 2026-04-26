@@ -5,7 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { dbDataSourceOptions } from './common/config/db-data-source';
-import {ScheduleModule} from "@nestjs/schedule";
+import { ScheduleModule } from '@nestjs/schedule';
+import { UploadFilesModule } from './modules/upload-files/upload-files.module';
 
 @Module({
     controllers: [AppController],
@@ -15,6 +16,7 @@ import {ScheduleModule} from "@nestjs/schedule";
         ScheduleModule.forRoot(),
         UsersModule,
         AuthModule,
+        UploadFilesModule,
     ],
 })
 export class AppModule {}

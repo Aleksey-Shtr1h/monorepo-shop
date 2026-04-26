@@ -1,6 +1,7 @@
 export interface IUserCore {
-    id?: string;
+    id?: string | null;
     name?: string;
-    email: string;
-    password: string;
+    email?: string;
+    password?: string;
+    role?: string | null;
 }

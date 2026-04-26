@@ -14,7 +14,7 @@ export default [
                 'error',
                 {
                     enforceBuildableLibDependency: true,
-                    allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
+                    allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$', '@front-lib/core'],
                     depConstraints: [
                         {
                             sourceTag: '*',
@@ -39,6 +39,7 @@ export default [
         // Override or add rules here
         rules: {
             indent: ['error', 4],
+            semi: ['error', 'always'],
         },
     },
 ];

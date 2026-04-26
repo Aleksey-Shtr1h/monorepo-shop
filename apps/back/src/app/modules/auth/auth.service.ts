@@ -56,10 +56,13 @@ export class AuthService {
 
         this._setRefreshTokenCookie(res, tokens.refreshToken);
         this._setAccessTokenCookie(res, tokens.accessToken);
-
+        
         res.send({
             message: 'Login successful',
-            user: { id: user.id },
+            user: {
+                id: user.id,
+                role: user.role,
+            },
         });
     }
 

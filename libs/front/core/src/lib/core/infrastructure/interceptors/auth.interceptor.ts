@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError, BehaviorSubject, tap } from 'rxjs';
 import { catchError, filter, take, switchMap } from 'rxjs/operators';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../services';
 import { Router } from '@angular/router';
 
 @Injectable()
@@ -23,22 +23,24 @@ export class AuthInterceptor implements HttpInterceptor {
         req: HttpRequest<any>,
         next: HttpHandler,
     ): Observable<HttpEvent<any>> {
-        // console.log('intercept request');
         const authReq = req.clone({ withCredentials: true });
 
-        return next.handle(authReq).pipe(
-            catchError((error: HttpErrorResponse) => {
-                console.log(req.url);
-                if (error.status === 401 && !req.url.includes('api/auth/refresh')) {
-                    return this.handle401Error(req, next);
-                }
+        return next.handle(authReq)
+            .pipe(
+                catchError((error: HttpErrorResponse) => {
+                    console.log(req.url);
+                    if (error.status
+                        === 401
+                        && !req.url.includes('api/auth/refresh')) {
+                        return this.handle401Error(
+                            req,
+                            next,
+                        );
+                    }
 
-                return throwError(() => error);
-            }),
-            // tap(authReq => {
-            //     console.log(authReq);
-            // })
-        );
+                    return throwError(() => error);
+                }),
+            );
     }
 
     private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
@@ -58,7 +60,7 @@ export class AuthInterceptor implements HttpInterceptor {
                     this._isRefreshing = false;
                     this._authService.logout().pipe(
                         tap(async () => {
-                            this._authService.updateIsAuthenticatedSubject(
+                            this._authService.updateIsAuthenticatedSignal(
                                 false,
                             );
                             await this._router.navigate(['/auth/login']);
