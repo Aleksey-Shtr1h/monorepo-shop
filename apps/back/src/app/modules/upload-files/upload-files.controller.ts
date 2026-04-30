@@ -1,10 +1,16 @@
 import {
-    BadRequestException,
     Body,
-    Controller, FileTypeValidator, MaxFileSizeValidator, ParseFilePipe, Post, UploadedFile, UseInterceptors,
+    Controller,
+    FileTypeValidator,
+    MaxFileSizeValidator,
+    ParseFilePipe,
+    Post,
+    UploadedFile,
+    UseInterceptors,
 } from '@nestjs/common';
 import { UploadFilesService } from './upload-files.service';
 import { FileInterceptor } from "@nestjs/platform-express";
+
 
 @Controller('upload-files')
 export class UploadFilesController {
