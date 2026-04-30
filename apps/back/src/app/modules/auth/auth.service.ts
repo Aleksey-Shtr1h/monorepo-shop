@@ -56,10 +56,13 @@ export class AuthService {
 
         this._setRefreshTokenCookie(res, tokens.refreshToken);
         this._setAccessTokenCookie(res, tokens.accessToken);
-
+        
         res.send({
             message: 'Login successful',
-            user: { id: user.id },
+            user: {
+                id: user.id,
+                role: user.role,
+            },
         });
     }
 
@@ -92,7 +95,7 @@ export class AuthService {
         const oldRefreshToken = req.cookies['refresh_token'];
 
         if (!oldRefreshToken) {
-            throw new UnauthorizedException()
+            throw new UnauthorizedException();
         }
 
         const deviceInfo = req.headers['user-agent'];
@@ -122,7 +125,7 @@ export class AuthService {
     }
 
     private async _generateTokens(user: UsersEntity, deviceInfo?: string, ipAddress?: string) {
-        const payload = { sub: user.id, email: user.email };
+        const payload = { sub: user.id, email: user.email, role: user.role };
 
         const accessToken = this._jwtService.sign(payload);
         const refreshToken = this._jwtService.sign(payload, {
@@ -190,7 +193,7 @@ export class AuthService {
         );
 
         if (!user) {
-            throw new UnauthorizedException()
+            throw new UnauthorizedException();
         }
 
         // 2. Поиск активного refresh-токена с таким хэшем
@@ -208,7 +211,7 @@ export class AuthService {
         }
 
         if (!existingToken) {
-            throw new UnauthorizedException()
+            throw new UnauthorizedException();
         }
 
         // 3. Деактивируем старый токен (токен ротация)

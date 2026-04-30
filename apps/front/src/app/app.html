@@ -1,13 +1,43 @@
-<ul class="remote-menu">
-    <li><a routerLink="/">Home</a></li>
-</ul>
-
-<div>
-    <button (click)="profile()">profile</button>
-</div>
-
-<div>
-    <button (click)="logout()">logout</button>
-</div>
-
+<root-header-app></root-header-app>
 <router-outlet></router-outlet>
+
+<!--ТЕСТЫ-->
+
+<!--<div style="padding: 20px;">-->
+<!--    <h2>NestJS + Angular + RxJS WebSocket</h2>-->
+<!--    <div style="margin: 10px 0;">-->
+<!--        <input #msgInput placeholder="Введите сообщение..." style="padding: 5px;" />-->
+<!--        <button (click)="sendMessage(msgInput.value)">Отправить</button>-->
+<!--    </div>-->
+<!--    <div>-->
+<!--        <h3>Ответы сервера:</h3>-->
+<!--        <ul>-->
+<!--            @for (message of messages | async; let idx = $index; track `${message + idx}`) {-->
+<!--                {{ message }}-->
+<!--            }-->
+<!--        </ul>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<div>-->
+<!--    <button (click)="change()">change</button>-->
+<!--</div>-->
+
+<!--<div>-->
+<!--    <input type="file" (change)="onFileSelected($event)" accept="image/*"/>-->
+<!--    <button type="button" (click)="onUpload()">-->
+<!--        Загрузить-->
+<!--    </button>-->
+<!--</div>-->
+
+<!--<div>-->
+<!--    <button (click)="profile()">profile</button>-->
+<!--</div>-->
+
+<!--<div>-->
+<!--    <button (click)="logout()">logout</button>-->
+<!--</div>-->
+
+<!--<div>-->
+<!--    <button (click)="info()">info</button>-->
+<!--</div>-->

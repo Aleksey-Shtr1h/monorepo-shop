@@ -1,6 +1,8 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { ApiError } from '../http-error';
 
 export interface IOptionsForRootRestAPI {
     withCredentials?: boolean;
@@ -11,16 +13,26 @@ export class HttpService {
     private _httpClient = inject(HttpClient);
     private _url = 'http://localhost:3000/api/';
 
-    public get<R>(additionalUrl: string, options?: IOptionsForRootRestAPI): Observable<R | R[]> {
+    public get<Res = unknown>(additionalUrl: string, options?: IOptionsForRootRestAPI): Observable<Res> {
         const url = this.getFullUrl(additionalUrl);
 
-        return this._httpClient.get<R | R[]>(url, options);
+        return this._httpClient.get<Res>(url, options)
+            .pipe(
+                catchError((err: HttpErrorResponse): Observable<never> => {
+                    return throwError(() => new ApiError(err));
+                })
+            );
     }
 
-    public post<T, R>(additionalUrl: string, body: T, options?: IOptionsForRootRestAPI): Observable<R> {
+    public post<Body, Res>(additionalUrl: string, body: Body, options?: IOptionsForRootRestAPI): Observable<Res> {
         const url = this.getFullUrl(additionalUrl);
 
-        return this._httpClient.post<R>(url, body, options);
+        return this._httpClient.post<Res>(url, body, options)
+            .pipe(
+                catchError((err: HttpErrorResponse): Observable<never> => {
+                    return throwError(() => new ApiError(err));
+                })
+            );
     }
 
     protected getFullUrl(additionalUrl: string): string {

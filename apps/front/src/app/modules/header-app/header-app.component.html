@@ -1,0 +1,49 @@
+<header class="grid grid-cols-3 items-center sticky top-0 z-100 shadow-md p-5 header-shop">
+    <div class="">
+        <div></div>
+    </div>
+
+    <div
+        class="justify-self-center cursor-pointer"
+        tabindex="0"
+        (click)="goToRoute('/')"
+        (keydown.enter)="goToRoute('/')"
+    >
+        <div class="header-shop_logo flex flex-col justify-center items-center">
+            <img
+                alt="Описание изображения"
+                width="50"
+                height="50"
+                [ngSrc]="'img/logo.jpg'"
+            >
+
+            <div class="flex header-shop_logo-text">
+                <p class="mr-2 font-mono text-orange-400">ONLINE</p>
+                <p class="font-mono text-indigo-600">SHOP</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-right justify-self-end">
+        <p-menubar
+            [breakpoint]="'0px'"
+            [model]="baseUserMenuItems()"
+            [autoDisplay]="false"
+        >
+            <ng-template #item let-item let-root="root">
+                <a
+                    class="pr-[10px] pl-[10px] cursor-pointer header-right_icon"
+                    tabindex="0"
+                    pTooltip="{{ item.tooltip }}"
+                    tooltipPosition="bottom"
+                    positionTop="10"
+                    (click)="goToRoute(item.routerLink)"
+                    (keydown.enter)="goToRoute(item.routerLink)"
+                >
+                    <p-inputicon class="{{ item.icon }}"/>
+                </a>
+            </ng-template>
+        </p-menubar>
+    </div>
+</header>
+

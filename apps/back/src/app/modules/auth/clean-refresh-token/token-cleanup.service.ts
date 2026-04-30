@@ -19,7 +19,7 @@ export class TokenCleanupService {
 
         const date = new Date();
 
-        date.setDate(date.getDate() - 1);
+        date.setHours(date.getHours() - 2);
 
         const result = await this.refreshTokenRepo.delete({
             createdAt: LessThan(date),

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { jwtConstants } from '../../../common/constant/jwt';
 import { Request } from 'express';
@@ -18,8 +17,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     public async validate(payload: any) {
-        console.log(payload);
-
-        return { userId: payload.sub, username: payload.username };
+        return { userId: payload.sub, username: payload.name, role: payload.role };
     }
 }
