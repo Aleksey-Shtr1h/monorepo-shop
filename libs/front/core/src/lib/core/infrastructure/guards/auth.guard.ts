@@ -13,17 +13,22 @@ export class AuthGuard implements CanActivate {
     private _router = inject(Router);
 
     public canActivate() {
-        return this._authService.getProfile().pipe(
-            map(() => {
-                const isAuthenticatedUser = this._authService.isAuthenticatedUser();
-
-                if (isAuthenticatedUser) {
-                    return isAuthenticatedUser;
-                }
-
-                return this._router.parseUrl('/auth/login');
-            }),
-            catchError(() => of(this._router.parseUrl('/auth/login')))
-        );
+        return this._authService.getProfile()
+            .pipe(
+                map((user) => {
+                    if (user) {
+                        this._authService.updateIsAuthenticatedSignal(true);
+                        
+                        return true;
+                    }
+                    
+                    this._authService.updateIsAuthenticatedSignal(false);
+                    
+                    return this._router.parseUrl('/auth/login');
+                }),
+                catchError(() => {
+                    return of(this._router.parseUrl('/auth/login'));
+                }),
+            );
     }
 }

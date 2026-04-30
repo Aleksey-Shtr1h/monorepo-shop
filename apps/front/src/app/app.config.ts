@@ -23,6 +23,7 @@ import {
     AuthInterceptor,
     AuthService,
     HttpService,
+    RolesGuard,
 } from '@front-lib/core';
 import {
     catchError,
@@ -63,6 +64,7 @@ export const appConfig: ApplicationConfig = {
                     }),
                 );
         }),
+        RolesGuard,
         AuthGuard,
         AuthService,
         HttpService,

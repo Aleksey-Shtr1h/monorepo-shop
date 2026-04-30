@@ -1,0 +1,33 @@
+.header-shop {
+    background-color: white;
+}
+
+.header-shop_logo .header-shop_logo-text {
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+
+.header-shop:hover .header-shop_logo-text {
+    opacity: 1;
+}
+
+.header-right_icon {
+    background-color: white;
+    border: none;
+    color: darkgrey;
+}
+
+.header-right_icon:hover {
+    color: cornflowerblue;
+}
+
+:host ::ng-deep .p-menubar-item-content:hover,
+:host ::ng-deep .p-menubar-item-content:focus {
+    background: none !important;
+}
+
+:host() ::ng-deep .p-menubar-root-list {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}

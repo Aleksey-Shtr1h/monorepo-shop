@@ -1,92 +1,97 @@
 {
-    "name": "front",
-    "$schema": "../../node_modules/nx/schemas/project-schema.json",
-    "projectType": "application",
-    "prefix": "app",
-    "sourceRoot": "apps/front/src",
-    "tags": ["scope:front"],
-    "targets": {
-        "build": {
-            "executor": "@nx/angular:webpack-browser",
-            "outputs": ["{options.outputPath}"],
-            "options": {
-                "outputPath": "dist/apps/front",
-                "index": "apps/front/src/index.html",
-                "main": "apps/front/src/main.ts",
-                "tsConfig": "apps/front/tsconfig.app.json",
-                "assets": [
-                    {
-                        "glob": "**/*",
-                        "input": "apps/front/public"
-                    }
-                ],
-                "styles": [
-                  "apps/front/src/styles.css",
-                  "node_modules/primeicons/primeicons.css"
-                ],
-                "customWebpackConfig": {
-                    "path": "apps/front/webpack.config.ts"
-                }
-            },
-            "configurations": {
-                "production": {
-                    "budgets": [
-                        {
-                            "type": "initial",
-                            "maximumWarning": "500kb",
-                            "maximumError": "1mb"
-                        },
-                        {
-                            "type": "anyComponentStyle",
-                            "maximumWarning": "4kb",
-                            "maximumError": "8kb"
-                        }
-                    ],
-                    "outputHashing": "all",
-                    "customWebpackConfig": {
-                        "path": "apps/front/webpack.prod.config.ts"
-                    }
-                },
-                "development": {
-                    "optimization": false,
-                    "extractLicenses": false,
-                    "sourceMap": true
-                }
-            },
-            "defaultConfiguration": "production"
-        },
-        "serve": {
-            "continuous": true,
-            "executor": "@nx/angular:module-federation-dev-server",
-            "configurations": {
-                "production": {
-                    "buildTarget": "front:build:production"
-                },
-                "development": {
-                    "buildTarget": "front:build:development"
-                }
-            },
-            "defaultConfiguration": "development",
-            "options": {
-                "publicHost": "http://localhost:4200"
-            }
-        },
-        "lint": {
-            "executor": "@nx/eslint:lint"
-        },
-        "test": {
-            "executor": "@angular/build:unit-test",
-            "options": {}
-        },
-        "serve-static": {
-            "continuous": true,
-            "executor": "@nx/web:file-server",
-            "options": {
-                "buildTarget": "front:build",
-                "port": 4200,
-                "staticFilePath": "dist/apps/front/browser",
-                "spa": true
-            }
+  "name": "front",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/front/src",
+  "tags": [
+    "scope:front"
+  ],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:webpack-browser",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/apps/front",
+        "index": "apps/front/src/index.html",
+        "main": "apps/front/src/main.ts",
+        "tsConfig": "apps/front/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/front/public"
+          },
+          "apps/front/src/assets"
+        ],
+        "styles": [
+          "apps/front/src/styles.css",
+          "node_modules/primeicons/primeicons.css"
+        ],
+        "customWebpackConfig": {
+          "path": "apps/front/webpack.config.ts"
         }
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all",
+          "customWebpackConfig": {
+            "path": "apps/front/webpack.prod.config.ts"
+          }
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/angular:module-federation-dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "front:build:production"
+        },
+        "development": {
+          "buildTarget": "front:build:development"
+        }
+      },
+      "defaultConfiguration": "development",
+      "options": {
+        "publicHost": "http://localhost:4200"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@angular/build:unit-test",
+      "options": {}
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "front:build",
+        "port": 4200,
+        "staticFilePath": "dist/apps/front/browser",
+        "spa": true
+      }
     }
+  }
 }

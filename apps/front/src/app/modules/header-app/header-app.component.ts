@@ -12,12 +12,18 @@ import { Menubar } from 'primeng/menubar';
 import { MenuItem } from 'primeng/api';
 import { Store } from '@ngrx/store';
 import { IUserCore } from '@front-lib/core';
-import { UserActions } from '../../common/store/user/user-actions';
+import { NgOptimizedImage } from '@angular/common';
+import { Router } from '@angular/router';
+import { InputIcon } from 'primeng/inputicon';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
     selector: 'root-header-app',
     imports: [
         Menubar,
+        NgOptimizedImage,
+        InputIcon,
+        Tooltip,
     ],
     templateUrl: './header-app.component.html',
     styleUrl: './header-app.component.css',
@@ -30,21 +36,27 @@ export class HeaderAppComponent {
             visible: false,
             id: 'admin-room',
             routerLink: '/admin',
+            tooltip: 'Админка',
         },
         {
             icon: 'pi pi-heart',
+            tooltip: 'Избранное',
         },
         {
             icon: 'pi pi-user',
             routerLink: 'auth/login',
+            tooltip: 'Данные пользователя',
         },
         {
             icon: 'pi pi-shopping-cart',
+            tooltip: 'Корзина',
         },
     ]);
 
     private readonly _store: Store<{ user: IUserCore }> = inject(Store);
     public user: Signal<IUserCore> = this._store.selectSignal((state) => state.user);
+    
+    private _router = inject(Router);
 
     constructor() {
         effect(() => {
@@ -66,13 +78,10 @@ export class HeaderAppComponent {
             });
         });
     }
-
-    public i() {
-        this._store.dispatch(UserActions.initUserStore({id: 'myId', role: 'admin'}));
-    }
-
-    public i2() {
-        console.log(this.user());
-        console.log(this.baseUserMenuItems());
+    
+    public async goToRoute(path: string): Promise<void> {
+        if (path) {
+            await this._router.navigate([ path ]);
+        }
     }
 }

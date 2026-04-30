@@ -14,7 +14,11 @@ export default [
                 'error',
                 {
                     enforceBuildableLibDependency: true,
-                    allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$', '@front-lib/core'],
+                    allow: [
+                        '^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$',
+                        '@front-lib/core',
+                        'socket.io-client',
+                    ],
                     depConstraints: [
                         {
                             sourceTag: '*',

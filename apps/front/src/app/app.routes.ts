@@ -1,12 +1,15 @@
 import { Route } from '@angular/router';
 import { DashComponent } from './modules/dash/dash.component';
-import { AuthGuard } from '@front-lib/core';
+import {
+    AuthGuard,
+    RolesGuard,
+} from '@front-lib/core';
 
 export const appRoutes: Route[] = [
     {
         path: 'admin',
         component: DashComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, RolesGuard],
     },
     {
         path: 'auth',

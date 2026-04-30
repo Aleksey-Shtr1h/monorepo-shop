@@ -10,8 +10,6 @@ export const initialState: Readonly<IUserCore> = {
 export const userReducer = createReducer(
     initialState,
     on(UserActions.initUserStore, (state, { id, role }) => {
-        console.log(id, role);
-
         return { ...state, role, id };
     }),
 );

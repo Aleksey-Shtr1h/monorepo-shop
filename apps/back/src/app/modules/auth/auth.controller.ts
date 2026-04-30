@@ -16,6 +16,8 @@ import { UserDto } from '../users/dto/user.dto';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { UsersService } from '../users/users.service';
+import { RolesGuard } from '../../common/guards/user-role.guard'
+import { Roles } from '../../common/decorators/user-roles.decorator'
 
 @Controller('auth') export class AuthController {
     constructor(private _authService: AuthService, private _usersService: UsersService) {
@@ -46,6 +48,13 @@ import { UsersService } from '../users/users.service';
             id: user.id,
             role: user.role,
         };
+    }
+    
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(['admin'])
+    @Get('hasAdmin')
+    public async hasAdmin() {
+        return true;
     }
 
     @UseGuards(JwtAuthGuard)

@@ -19,10 +19,10 @@ import {
 } from '@angular/forms';
 import {
     AuthService,
-} from '@front-lib/core'
-import { Store } from '@ngrx/store'
-import { IRootStore } from '../../common/store/interface/store.interface'
-import { UserActions } from '../../common/store/user/user-actions'
+} from '@front-lib/core';
+import { Store } from '@ngrx/store';
+import { IRootStore } from '../../common/store/interface/store.interface';
+import { UserActions } from '../../common/store/user/user-actions';
 
 @Component({
     selector: 'root-auth',
@@ -94,10 +94,7 @@ export class AuthCoreComponent implements OnInit {
         const newUser = this.formRegister?.getRawValue();
         
         if (isFormValid) {
-            this._authService.register(newUser)
-                .subscribe((user) => {
-                    console.log(user);
-                });
+            this._authService.register(newUser).subscribe();
         }
     }
     
@@ -110,7 +107,6 @@ export class AuthCoreComponent implements OnInit {
                 .subscribe(
                     {
                         next: (user) => {
-                            console.log(user);
                             this._authService.updateIsAuthenticatedSignal(true);
                             this._store.dispatch(UserActions.initUserStore(user));
                         },

@@ -28,10 +28,7 @@ export class AuthInterceptor implements HttpInterceptor {
         return next.handle(authReq)
             .pipe(
                 catchError((error: HttpErrorResponse) => {
-                    console.log(req.url);
-                    if (error.status
-                        === 401
-                        && !req.url.includes('api/auth/refresh')) {
+                    if (error.status === 401 && !req.url.includes('api/auth/refresh')) {
                         return this.handle401Error(
                             req,
                             next,
@@ -52,20 +49,23 @@ export class AuthInterceptor implements HttpInterceptor {
                 switchMap(() => {
                     this._isRefreshing = false;
                     this._refreshTokenSubject.next('refreshed');
+                    
                     return next.handle(
                         request.clone({ withCredentials: true }),
                     );
                 }),
                 catchError((err) => {
                     this._isRefreshing = false;
-                    this._authService.logout().pipe(
-                        tap(async () => {
-                            this._authService.updateIsAuthenticatedSignal(
-                                false,
-                            );
-                            await this._router.navigate(['/auth/login']);
-                        }),
-                    );
+                    this._authService.logout()
+                        .pipe(
+                            tap(async () => {
+                                this._authService.updateIsAuthenticatedSignal(
+                                    false,
+                                );
+                                await this._router.navigate([ '/auth/login' ]);
+                            }),
+                        );
+                    
                     return throwError(() => err);
                 }),
             );

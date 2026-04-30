@@ -41,6 +41,10 @@ export class AuthService {
     public getProfile(): Observable<IUserCore> {
         return this._httpService.get<IUserCore>(`auth/profile`, { withCredentials: true });
     }
+    
+    public hasAdmin() {
+        return this._httpService.get<boolean>(`auth/hasAdmin`, { withCredentials: true });
+    }
 
     public refreshToken(): Observable<any> {
         return this._httpService
