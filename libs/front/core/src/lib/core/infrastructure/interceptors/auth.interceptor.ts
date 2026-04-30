@@ -44,31 +44,32 @@ export class AuthInterceptor implements HttpInterceptor {
         if (!this._isRefreshing) {
             this._isRefreshing = true;
             this._refreshTokenSubject.next(null);
-
-            return this._authService.refreshToken().pipe(
-                switchMap(() => {
-                    this._isRefreshing = false;
-                    this._refreshTokenSubject.next('refreshed');
-                    
-                    return next.handle(
-                        request.clone({ withCredentials: true }),
-                    );
-                }),
-                catchError((err) => {
-                    this._isRefreshing = false;
-                    this._authService.logout()
-                        .pipe(
-                            tap(async () => {
-                                this._authService.updateIsAuthenticatedSignal(
-                                    false,
-                                );
-                                await this._router.navigate([ '/auth/login' ]);
-                            }),
+            
+            return this._authService.refreshToken()
+                .pipe(
+                    switchMap(() => {
+                        this._isRefreshing = false;
+                        this._refreshTokenSubject.next('refreshed');
+                        
+                        return next.handle(
+                            request.clone({withCredentials: true}),
                         );
-                    
-                    return throwError(() => err);
-                }),
-            );
+                    }),
+                    catchError((err) => {
+                        this._isRefreshing = false;
+                        this._authService.logout()
+                            .pipe(
+                                tap(async () => {
+                                    this._authService.updateIsAuthenticatedSignal(
+                                        false,
+                                    );
+                                    await this._router.navigate([ '/auth/login' ]);
+                                }),
+                            );
+                        
+                        return throwError(() => err);
+                    }),
+                );
         } else {
             return this._refreshTokenSubject.pipe(
                 filter((token) => token !== null),

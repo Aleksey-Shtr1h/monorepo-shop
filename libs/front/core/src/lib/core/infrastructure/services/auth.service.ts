@@ -33,9 +33,11 @@ export class AuthService {
             }));
     }
 
-    public logout(): Observable<any> {
+    public logout(): Observable<{
+        message: string;
+    }> {
         return this._httpService
-            .post(`auth/logout`, {}, { withCredentials: true });
+            .post<object, { message: string }>(`auth/logout`, {}, { withCredentials: true });
     }
 
     public getProfile(): Observable<IUserCore> {
@@ -46,9 +48,9 @@ export class AuthService {
         return this._httpService.get<boolean>(`auth/hasAdmin`, { withCredentials: true });
     }
 
-    public refreshToken(): Observable<any> {
+    public refreshToken(): Observable<{ message: string }> {
         return this._httpService
-            .post(`auth/refresh`, {}, { withCredentials: true });
+            .post<object, { message: string }>(`auth/refresh`, {}, { withCredentials: true });
     }
 
     public updateIsAuthenticatedSignal(value: boolean): void {
